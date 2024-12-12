@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #64241b;
+}
+
+.top-bar {
+    z-index: 1;
+}
+
+#undo-btn {
+    width: 100px;
+    height: 25px;
+    background-color: blue;
+}
+
+#prison-bars {
+    width: 1920px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: 3s;
+}
+
+#prison-bars.slide-left {
+    -webkit-transition: 3s;
+    -moz-transition: 3s;
+    -ms-transition: 3s;
+    -o-transition: 3s;
+    transition: 3;
+    margin-left: 100% !important;
+}
+
+#calendar-canvas {
+    position: absolute;
+    top: 0;
+    z-index: -2;
+}
