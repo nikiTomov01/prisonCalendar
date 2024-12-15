@@ -28,7 +28,7 @@ context.strokeStyle = `#2b5a91`;
 
 let currentData = ".";
 let localPrevious = currentData;
-let currUser = "Petar";
+let currUser = "SamsungMamsung";
 
 let isMouseDown = false;
 let previous = { x: 0, y: 0};
@@ -52,45 +52,14 @@ canvas.addEventListener("mousedown", event => {
 
 canvas.addEventListener("mouseup", async event => {
     isMouseDown = false;
-    let dataUrl = canvas.toDataURL();
-    let previousData = currentData;
-    localPrevious = currentData;
-    console.log(localPrevious);
-    currentData = dataUrl;
-    try {
-        const ref = await setDoc(doc(calRef, `${currUser}`),  {
-            prevData: previousData,
-            currData: currentData
-        });
-        //console.log(ref.id);
-    } catch (e) {
-        console.error("Error adding document: " + e);
-    }
+    writeCalendarData(canvas.toDataURL(), currentData);
 })
 
 const undoBtn = document.getElementById("undo-btn");
 
-undoBtn.addEventListener("click", async () => {
+undoBtn.addEventListener("click", async () => { // undoes the last stroke.
     // retrieve calendar data.
-    const docRef = doc(calRef, `${currUser}`);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        //console.log(docSnap.data().prevData);
-        //console.log(typeof(docSnap.data().prevData));
-        const img = new Image();
-        img.onload = () => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(img, 0, 0);
-        }
-
-        img.onerror = () => {
-            console.error("Failed to load image from data url!");
-        }
-        img.src = docSnap.data().prevData;
-    }
-    else {
-        console.log("No such document!");
-    }
+    undoLastStroke();
 })
 
 //slide bars bellow
@@ -110,3 +79,44 @@ barsBtn.addEventListener("click", () => {
         barsCheck = true;
     }
 })
+
+// function definitions for cleaner code.
+
+async function writeCalendarData(dataUrl, previousData) {
+    //let dataUrl = canvas.toDataURL();
+    //let previousData = currentData;
+    //localPrevious = currentData;
+    //console.log(localPrevious);
+    currentData = dataUrl;
+    try {
+        const ref = await setDoc(doc(calRef, `${currUser}`),  {
+            prevData: previousData,
+            currData: currentData
+        });
+        //console.log(ref.id);
+    } catch (e) {
+        console.error("Error adding document: " + e);
+    }
+}
+
+async function undoLastStroke() {
+    const docRef = doc (calRef, `${currUser}`);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+         const img = new Image();
+         img.onload = () => {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(img, 0, 0);
+         }
+
+         img.onerror = () => {
+            console.error("Failed to load image from data url!");
+         }
+
+         img.src = docSnap.data().prevData;
+         writeCalendarData(docSnap.data().prevData, docSnap.data().prevData);
+    }
+    else {
+        console.log("No such Document.");
+    }
+}
